@@ -1,4 +1,5 @@
 #include "GPIO_driver.h"
+#include "BIT_MATH.h"
 
 void GPIO_PinInit(GPIO_PinConfig *config)
 {
@@ -7,19 +8,20 @@ void GPIO_PinInit(GPIO_PinConfig *config)
       if (config->direction == GPIO_INPUT)
       {
             // write 1 in tris register at the corresponding pin location
-            *tris |= (1 << config->pin);
+            SET_BIT(*tris,config->pin);
+            //*tris |= (1 << config->pin);
       }
       else
       {
             // write 0 in tris register at the corresponding pin location
             *tris &= ~(1 << config->pin);
             if (config->initial_state == GPIO_LOW)
-            {
-                  *port &= ~(1 << config->pin);
+            {      CLR_BIT(*port, config->pin);
+                  //*port &= ~(1 << config->pin);
             }
             else
-            {
-                  *port |= (1 << config->pin);
+            {      SET_BIT(*port,config->pin);
+                  //*port |= (1 << config->pin);
             }
       }
 }
@@ -28,21 +30,23 @@ void GPIO_WritePin(GPIO_PinConfig *config, uint8 value)
 {
       volatile unsigned char *port = PORT_REG[config->port];
       if (value == GPIO_HIGH)
-      {
-            *port |= (1 << config->pin);
+      {      SET_BIT(*port,config->pin);
+            //*port |= (1 << config->pin);
       }
       else
-      {
-            *port &= ~(1 << config->pin);
+      {      CLR_BIT(*port, config->pin);
+            //*port &= ~(1 << config->pin);
       }
 }
 
 uint8 GPIO_ReadPin(GPIO_PinConfig *config)
 {
-
-      return 0;
+      if(GET_BIT(*port,config->pin))
+            return GPIO_HIGH;
+      return GPIO_LOW;
 }
 
 void GPIO_TogglePin(GPIO_PinConfig *config)
 {
+      TOG_BIT(*port,config->pin);
 }
