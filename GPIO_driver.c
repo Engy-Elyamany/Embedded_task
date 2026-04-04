@@ -14,7 +14,8 @@ void GPIO_PinInit(GPIO_PinConfig *config)
       else
       {
             // write 0 in tris register at the corresponding pin location
-            *tris &= ~(1 << config->pin);
+            //*tris &= ~(1 << config->pin);
+            CLR_BIT(*tris, config->pin);
             if (config->initial_state == GPIO_LOW)
             {
                   CLR_BIT(*port, config->pin);
